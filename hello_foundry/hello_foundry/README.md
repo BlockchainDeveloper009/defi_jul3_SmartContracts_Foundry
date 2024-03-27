@@ -21,6 +21,12 @@ https://book.getfoundry.sh/
 $ forge build
 ```
 
+### deploy
+
+```shell
+$ forge create SimpleStorage --rpc-url "" --interactive
+```
+
 ### Test
 
 ```shell
@@ -38,6 +44,20 @@ $ forge fmt
 ```shell
 $ forge snapshot
 ```
+
+### Convert Hex to Decimal
+```
+$ cast --to-base 0x714c2 dec
+```
+
+### Add .env to project
+
+```
+$ source .env
+$echo PRIVATE_KEY
+$ forge script script/DeploySimpleStorage.s.sol --rpc-url $RPC_URL --broadcast --private-keu $PRIVATE_KEY
+```
+
 
 ### Anvil
 
