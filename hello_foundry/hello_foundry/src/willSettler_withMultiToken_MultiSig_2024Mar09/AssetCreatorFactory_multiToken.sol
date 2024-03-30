@@ -9,7 +9,10 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./Enums.sol";
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+
 
 /** **********************************************
  * @notice
@@ -28,23 +31,36 @@ import "./Enums.sol";
  * //i_ immutable vars
  *  Added moderator for contract
  *  Added new modifiers
+ * 
+ * Mar/28/2024 
+ * - adding price aggregator from chainlink
+ * - transffer from when creating a asset
+ * - reentrancy guard implemented
+ * - 
  * */
-contract AssetCreatorFactory_multiToken {
+contract AssetCreatorFactory_multiToken is ReentrancyGuard {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
     using Enums for Enums.CryptoAssetStatus;
 
+    ////////////////////////
+    //  State Variables  ///
+    ////////////////////////
+    uin256 private constant ADDITIONAL_FEED_PRECISION = 1e10;
+    uin256 private constant PRECISION = 1e18;
     cryptoAssetInfo public cryptoAssetInfoInstance;
     //this is to create an ADMIN role
     mapping(address => bool) public adminrole;
     string contractInfo = "AssetCreatorFactory_multiTokenV2:Deployed on Jan-28-2024";
     address public s_Contract_moderator;
     address public owner;
-    
+    //
     mapping(string => cryptoAssetInfo) public cryptoAssets;
     //added this new variables to track the assets created by a user
     mapping(address => cryptoAssetInfo[]) public s_userCreatedAssets;
+    //
     string[] private s_arr_cryptoAssetIds;
+    //
     uint256 public s_assetsCurrentId;
     // Mapping to store balances for each token
     mapping(address => uint256) private s_map_tokenBalances;
@@ -55,6 +71,9 @@ contract AssetCreatorFactory_multiToken {
         // s_map_tokenBalances[token] += amount;
         // emit Deposit(token, msg.sender, amount);
     }
+    //////////////////////
+    //     EVENTS      ///
+    //////////////////////
  event Deposit(address indexed token, address indexed depositor, uint256 amount);
  event Withdraw(address indexed token, address indexed recipient, uint256 amount);
     /* Events */
@@ -124,7 +143,10 @@ function getModerator() external returns (address) {
         string memory assetName,
         address assetTokenAddr,
         uint256 assetAmount
-    ) public payable {
+    ) public 
+    moreThanZero(assetAmount) 
+    isAllowedToken(assetTokenAddr)
+    nonReentrant payable {
         
         // Check if the contract has the required allowance
     // require(
@@ -135,7 +157,11 @@ function getModerator() external returns (address) {
     //     if (IERC20(assetTokenAddr).allowance(msg.sender, address(this)) < assetAmount) {
     //         IERC20(assetTokenAddr).approve(address(this), type(uint256).max);
     //     }
+        bool success = IERC20(assetTokenAddr).transferFrom(msg.sender,address(this), assetAmount);
 
+        if(!success){
+            revert DSCEngine__TransferFailed();
+        }
 
         console.log(
                     "s_assetsCurrentId '%s' ",
@@ -306,6 +332,18 @@ Returns the assets created by invoking user
             return "CancelledByWill";
         }
         return "Invalid_AssetStatus";
+    }
+
+    function getUsdValue(address token, uin256 amount) public 
+    view returns(uint256){
+        AggregatorV3Interface priceFeed 
+        = AggregatorV3Interface(s_priceFeeds[token]);
+
+        //The returned value from chainlink is 1000 * 1e8
+        (,int256 price, , , ) = priceFeed.latestRoundData();
+        
+        return ((uint256(price) * ADDITIONAL_FEED_PRECISION) * amount) / PRECISION ; 
+        // (1000 * 1e8 * (1e10))
     }
 
 

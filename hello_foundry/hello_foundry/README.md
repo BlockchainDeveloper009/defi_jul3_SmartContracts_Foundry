@@ -32,7 +32,12 @@ $ forge create SimpleStorage --rpc-url "" --interactive
 ```shell
 $ forge test
 ```
-
+### Test one file
+```shell
+$ forge test -m testBobBalance;
+$ forge test -m <functionName>
+$ forge test -m invariant_protocolMustHaveMoreValueThanTotalSupply;
+```
 ### Format
 
 ```shell
