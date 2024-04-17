@@ -48,6 +48,9 @@ contract AssetCreatorFactory_multiToken is ReentrancyGuard {
     ////////////////////////
     uin256 private constant ADDITIONAL_FEED_PRECISION = 1e10;
     uin256 private constant PRECISION = 1e18;
+    // store price feed by address 
+    mapping(address token => address priceFeed) private s_priceFeeds;
+
     cryptoAssetInfo public cryptoAssetInfoInstance;
     //this is to create an ADMIN role
     mapping(address => bool) public adminrole;
@@ -65,18 +68,28 @@ contract AssetCreatorFactory_multiToken is ReentrancyGuard {
     // Mapping to store balances for each token
     mapping(address => uint256) private s_map_tokenBalances;
     
+     ////////////////////////////////////
+    //  Internal or Private functions  ///
+    ///////////////////////////////////
      // Internal function to handle ERC-20 deposit
     function _depositERC20(address token, uint256 amount) internal {
         // IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
         // s_map_tokenBalances[token] += amount;
         // emit Deposit(token, msg.sender, amount);
     }
+     //////////////////////
+    //     Errors      ///
+    //////////////////////
+
+    error AsstC_Engine_TransferFailed(uint256 healthF);
+
     //////////////////////
     //     EVENTS      ///
     //////////////////////
  event Deposit(address indexed token, address indexed depositor, uint256 amount);
  event Withdraw(address indexed token, address indexed recipient, uint256 amount);
     /* Events */
+
     
     /**
         @param assetId: Property name or address for ex. Town home located in Santa clara, 3490 Moretti lane, Milipitas,CA
@@ -91,7 +104,13 @@ contract AssetCreatorFactory_multiToken is ReentrancyGuard {
         string assetId,        
         uint256 assetAmount
     );
+    //////////////////////
+    //     Modifiers      ///
+    //////////////////////
+    function _TransferFailed() internal view{
+        
 
+    }
     modifier onlyValidAsset(string memory locId) {
         console.log('asset--> ');
         //console.log(cryptoAssets[locId].assetStatus);
@@ -333,7 +352,12 @@ Returns the assets created by invoking user
         }
         return "Invalid_AssetStatus";
     }
-
+    /**
+     * 
+     * @param token kk
+     * @param amount kk
+     * yt:1.38.05 - deif stablecoins
+     */
     function getUsdValue(address token, uin256 amount) public 
     view returns(uint256){
         AggregatorV3Interface priceFeed 
@@ -344,6 +368,12 @@ Returns the assets created by invoking user
         
         return ((uint256(price) * ADDITIONAL_FEED_PRECISION) * amount) / PRECISION ; 
         // (1000 * 1e8 * (1e10))
+    }
+    /**
+     * yt-1.43
+     */
+    function _healthFactor() private view returns{
+
     }
 
 

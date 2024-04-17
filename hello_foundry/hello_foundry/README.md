@@ -36,7 +36,7 @@ $ forge test
 ```shell
 $ forge test -m testBobBalance;
 $ forge test -m <functionName>
-$ forge test -m invariant_protocolMustHaveMoreValueThanTotalSupply;
+$ forge test -m invariant_protocolMustHaveMoreValueThanTotalSupply -vvvv;
 ```
 ### Format
 
