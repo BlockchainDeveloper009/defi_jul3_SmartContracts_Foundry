@@ -1,10 +1,13 @@
 [profile.default]
-src = "src"
+#src = "src"
+src = "src/defi_erc20/ourtoken.sol"
+#ourtoken
 out = "out"
 libs = ["lib"]
 remappings = ["@chainlink/contracts=lib/chainlin-brownie",
-"@openzeppelin/contracts=lib/openzeppelin-contracts/contracts",
-]
+
+"@openzeppelin=lib/openzeppelin-contracts"]
+#"@openzeppelin/contracts=lib/openzeppelin-contracts/contracts"
 #"@openzeppelin/contracts=lib/openzeppelin-contracts/contracts/security"
 
 

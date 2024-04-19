@@ -14,9 +14,11 @@
 forge script script/deploy.s.sol
 --rpc-url http:127.0.0.1 --broadcast --interactives
 [txn_1](https://youtu.be/umepbfKp5rI?t=27505)
-[install_openzepplin_configure_toml_file](https://youtu.be/sas02qSFZ74?t=26428)
+[install_openzepplin_configure__remapping_toml_file](https://youtu.be/sas02qSFZ74?t=26428)
 
+>>$forge install OpenZeppelin/openzeppelin-contracts --no-commit
 
+>>[transmission11/solmate -github repo for smartcontratc]()
 ### part 2 
 
 [openzepp | 2. ](https://youtu.be/sas02qSFZ74)
