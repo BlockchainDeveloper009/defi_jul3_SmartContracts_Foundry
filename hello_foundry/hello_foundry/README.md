@@ -26,6 +26,9 @@ $ forge build
 ```shell
 $ forge create SimpleStorage --rpc-url "" --interactive
 ```
+```shell
+$ forge script script/storage.sol --rpc-url $RPC_URL --broadcast --private-key $PRIVATE_KEY
+```
 
 ### Test
 
@@ -38,9 +41,10 @@ $ forge test -m testBobBalance;
 $ forge test -m <functionName>
 $ forge test -m invariant_protocolMustHaveMoreValueThanTotalSupply -vvvv;
 ```
-### Format
+### Forge tricks
 
 ```shell
+#format solidity code
 $ forge fmt
 ```
 
@@ -74,12 +78,20 @@ $ anvil
 
 ```shell
 $ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+$ forge script script/Counter.s.sol:CounterScript --rpc-url <https:127.0.0.1:8545> --private-key <your_private_key>
+$ forge script script/Counter.s.sol:CounterScript --rpc-url $RPC_URL_FROM_DOT_ENV --private-key <your_private_key>
 ```
 
-### Cast
+### Cast - to interact with contract from bash
 
 ```shell
 $ cast <subcommand>
+$ cast send --help
+$ cast send contractaddr "store(uint256)" 123
+$ cast send contractaddr "methodnameWithIntakingArgs)" incomingArgs --rpc-url $RPC_URL_FROM_DOT_ENV --private-key <your_private_key>
+# send vs call of transaction, refer patrick collins video https://youtu.be/umepbfKp5rI?t=28754
+$ cast call --help
+#wallet, ledger
 ```
 
 ### Help
@@ -89,3 +101,9 @@ $ forge --help
 $ anvil --help
 $ cast --help
 ```
+
+
+### vscode extensions
+
+- markdown all in one - preview for .md files
+
